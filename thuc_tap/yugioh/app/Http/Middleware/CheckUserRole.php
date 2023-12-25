@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class CheckUserRole
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function handle(Request $request, Closure $next)
+    {
+        // Kiểm tra xem người dùng đã đăng nhập chưa
+        if (Auth::check()) {
+            // Lấy vai trò của người dùng
+            $userRole = Auth::user()->IDRole;
+    
+            // Kiểm tra và chuyển hướng
+            if ($userRole == 2) {
+                // Nếu là role 2 (admin), cho phép truy cập
+                return $next($request);
+            }
+    
+            // Nếu là role 1 (khách hàng), chuyển hướng về trang home
+            return redirect()->route('home');
+        }
+    
+        // Nếu người dùng chưa đăng nhập, chuyển hướng về trang đăng nhập
+        return redirect()->route('login');
+    }
+}
