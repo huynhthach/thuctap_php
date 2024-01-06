@@ -18,9 +18,11 @@ class AdminController extends Controller
 {
     public function admin_index()
     {
-            // Lọc và lấy 3 views có path tương ứng với 'card' và 'news'
-        $cardViews = Views::where('Path', 'like', '/cardinfo/increment-views/%')->limit(3)->get();
-        $newsViews = Views::where('Path', 'like', '/news/%')->limit(3)->get();
+        // Lấy 3 views có số lần xem cao nhất của 'card'
+        $cardViews = Views::where('Path', 'like', '/cardinfo/increment-views/%')->orderBy('View', 'desc')->take(3)->get();
+
+        // Lấy 3 views có số lần xem cao nhất của 'news'
+        $newsViews = Views::where('Path', 'like', '/news/%')->orderBy('View', 'desc')->take(3)->get();
         
         // Lấy ID của các views tương ứng
         $cardViewIds = $cardViews->pluck('ID');
@@ -30,24 +32,14 @@ class AdminController extends Controller
         $cardItems = Item::whereIn('ItemID', $cardViewIds)->get();
         $newsItems = News::whereIn('NewsID', $newsViewIds)->get();
 
-        
-        // Sắp xếp từ cao đến thấp theo số lượt xem
-        $sortedCardItems = $cardItems->sortByDesc(function ($item) use ($cardViews) {
-            return $cardViews->where('ID', $item->ItemID)->first()->View;
-        });
-
-        $sortedNewsItems = $newsItems->sortByDesc(function ($item) use ($newsViews) {
-            return $newsViews->where('ID', $item->NewsID)->first()->View;
-        });
-
         // Xử lý dữ liệu để truyền cho view
-        $labelsCard = $sortedCardItems->pluck('ItemName');
-        $viewsCard = $sortedCardItems->map(function ($item) use ($cardViews) {
+        $labelsCard = $cardItems->pluck('ItemName');
+        $viewsCard = $cardItems->map(function ($item) use ($cardViews) {
             return $cardViews->where('ID', $item->ItemID)->first()->View;
         });
 
-        $labelsNews = $sortedNewsItems->pluck('Title');
-        $viewsNews = $sortedNewsItems->map(function ($item) use ($newsViews) {
+        $labelsNews = $newsItems->pluck('Title');
+        $viewsNews = $newsItems->map(function ($item) use ($newsViews) {
             return $newsViews->where('ID', $item->NewsID)->first()->View;
         });
 
@@ -205,7 +197,6 @@ class AdminController extends Controller
         // Create new news detail
         $newsDetail->Content = $request->input('content');
         $newsDetail->NewsID = $news->NewsID;
-        $newsDetail->ThuTu = Carbon::now()->year;
         $newsDetail->save();
     
         return redirect()->route('database');
@@ -296,7 +287,6 @@ class AdminController extends Controller
             $imageName = $image->getClientOriginalName(); // Use the original name
             $image->move(public_path('img/item_img/'), $imageName);
             $item->image = $imageName;
-            $item->views = 0;
         }
 
         $item->save();

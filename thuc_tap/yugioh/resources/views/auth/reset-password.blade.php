@@ -24,7 +24,7 @@
                             </div>
 
 
-                            <button type="submit" class="site-btn">{{ __('Register Now') }}</button>
+                            <button type="submit" class="site-btn">{{ __('Login Now') }}</button>
 
                             {{-- Display errors below the submit button --}}
                             @if (count($errors) > 0)

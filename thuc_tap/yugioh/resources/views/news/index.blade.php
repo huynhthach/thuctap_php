@@ -1,9 +1,29 @@
+<style>
+            .search-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+        }
+</style>
 <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
 @extends('layout.app')
 @section('content')
 <section class="section">
     <div class="row">
         <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+        <div class="search-container">
+            <a href="{{ route('news.index', ['category' => '1', 'name' => request('name')]) }}" class="btn btn-secondary {{ request('category') == '1' ? 'active' : '' }}">tin tức</a>
+            <a href="{{ route('news.index', ['category' => '2', 'name' => request('name')]) }}" class="btn btn-secondary {{ request('category') == '2' ? 'active' : '' }}">hướng dẫn</a>
+        </div>
+        @if ($newsList->count() <= 0)
+            <h2>No news found</h2>
+        @endif
             <h1 style="margin-top: 50px;margin-left: 55px;">Latest News</h1>
             <div id="news-container">
                 @foreach($newsList as $news)

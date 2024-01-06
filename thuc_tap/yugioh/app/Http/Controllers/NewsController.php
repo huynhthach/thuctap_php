@@ -7,10 +7,24 @@ use App\Models\News;
 use App\Models\NewsCategories;
 class NewsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Lấy danh sách tin tức và truyền nó đến view
-        $newsList = News::with(['details', 'category'])->get();
+        $newsList = News::with(['details', 'category']);
+    
+        // Kiểm tra xem có yêu cầu lọc theo category hay không
+        $categoryFilter = $request->input('category');
+    
+        if ($categoryFilter) {
+            $newsList->where('CategoryID', $categoryFilter);
+        }
+    
+        // Sắp xếp tin tức theo thứ tự giảm dần của CategoryID
+        $newsList->orderBy('CategoryID', 'desc');
+    
+        // Lấy kết quả cuối cùng
+        $newsList = $newsList->get();
+    
         return view('news.index', compact('newsList'));
     }
 

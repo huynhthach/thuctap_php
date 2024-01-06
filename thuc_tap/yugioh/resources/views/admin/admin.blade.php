@@ -1,6 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @extends('admin.layout.app')
-
 @section('content')
 <div class="container mt-4">
     <h1 style="text-align: center;">Chào mừng bạn đến admin</h1>
